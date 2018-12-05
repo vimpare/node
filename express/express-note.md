@@ -263,3 +263,4 @@ res.render(‘index’) 就是指，把子目录views下面的index.html文件�
 
 数据脚本：
 blog.js，用于存放数据
+参考：http://javascript.ruanyifeng.com/nodejs/express.html
