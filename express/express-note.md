@@ -144,3 +144,122 @@ router.use(function(req, res, next) {
     next();
 });
 ```
+**response.sendFile**
+response.sendFile方法用于发送文件,是绝对路径，写相对路径会报错，
+```
+解决办法是：res.sendFile(path.join(__dirname, '../public/html', 'test.html'));
+
+其中app.js的静态文件路由是：app.use(express.static(path.join(__dirname, '/public')));
+```
+注意，要引入path
+
+中间件：
+**express.static**
+为了提供诸如图像、CSS 文件和 JavaScript 文件之类的静态文件，请使用 Express 中的 express.static 内置中间件函数
+```
+express.static(root, [options])
+```
+通过如下代码就可以将 public 目录下的图片、CSS 文件、JavaScript 文件对外开放访问了：
+
+`app.use(express.static('public'))`
+现在，你就可以访问 public 目录中的所有文件了：
+
+```autohttp://localhost:3000/images/kitten.jpg
+http://localhost:3000/css/style.css
+http://localhost:3000/js/app.js
+http://localhost:3000/images/bg.png
+http://localhost:3000/hello.htmlauto
+```
+
+Express 在静态目录查找文件，因此，存放静态文件的目录名不会出现在 URL 中。
+
+
+**response.render方法**
+用于渲染网页模板。
+静态：
+在项目目录之中，建立一个子目录views，用于存放网页模板。
+```
+var express = require('express');
+var app = express();
+
+app.get('/', function (req, res) {
+    res.sendFile(__dirname + '/views/index.html');
+});
+
+app.get('/about', (req, res) => {
+    res.sendFile(__dirname + '/views/about.html');
+});
+
+app.get('/article', (req, res) => {
+    res.sendFile(__dirname + '/views/article.html');
+});
+
+app.listen(3000);
+```
+
+
+
+
+**requst对象**
+request.ip属性用于获得HTTP请求的IP地址。
+request.files用于获取上传的文件。
+
+设定express实例的参数。
+
+```
+// 设定port变量，意为访问端口
+app.set('port', process.env.PORT || 3000);
+
+// 设定views变量，意为视图存放的目录
+app.set('views', path.join(__dirname, 'views'));
+
+// 设定view engine变量，意为网页模板引擎
+app.set('view engine', 'jade');
+
+app.use(express.favicon());
+app.use(express.logger('dev'));
+app.use(express.bodyParser());
+app.use(express.methodOverride());
+app.use(app.router);
+
+// 设定静态文件目录，比如本地文件
+// 目录为demo/public/images，访问
+// 网址则显示为http://localhost:3000/images
+app.use(express.static(path.join(__dirname, 'public')));
+```
+
+动态网页模板：
+hbs模板引擎
+`npm install hbs --save-dev`
+改写app.js。
+```
+// app.js文件
+
+var express = require('express');
+var app = express();
+
+// 加载hbs模块
+var hbs = require('hbs');
+
+// 指定模板文件的后缀名为html
+app.set('view engine', 'html');
+
+// 运行hbs模块
+app.engine('html', hbs.__express);
+
+app.get('/', function (req, res){
+	res.render('index');
+});
+
+app.get('/about', function(req, res) {
+	res.render('about');
+});
+
+app.get('/article', function(req, res) {
+	res.render('article');
+});
+```
+res.render(‘index’) 就是指，把子目录views下面的index.html文件，交给模板引擎hbs渲染
+
+数据脚本：
+blog.js，用于存放数据
